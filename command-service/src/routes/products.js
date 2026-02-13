@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { v4: uuidv4 } = require('../utils');
+const { productSchema } = require('../validation');
 
 const router = express.Router();
 
@@ -9,10 +10,9 @@ router.post('/api/products', async (req, res) => {
   const { name, category, price, stock } = req.body;
 
   // Validation
-  if (!name || !category || price === undefined || stock === undefined) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: name, category, price, stock' 
-    });
+  const { error } = productSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
 
   if (price < 0 || stock < 0) {

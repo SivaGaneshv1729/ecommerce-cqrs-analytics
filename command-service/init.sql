@@ -39,3 +39,8 @@ CREATE TABLE IF NOT EXISTS outbox (
 
 -- Index for efficient querying of unpublished events
 CREATE INDEX IF NOT EXISTS idx_outbox_unpublished ON outbox(published_at) WHERE published_at IS NULL;
+
+-- Indexes for foreign keys and common lookups
+CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id);

@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { v4: uuidv4 } = require('../utils');
+const { orderSchema } = require('../validation');
 
 const router = express.Router();
 
@@ -9,18 +10,9 @@ router.post('/api/orders', async (req, res) => {
   const { customerId, items } = req.body;
 
   // Validation
-  if (!customerId || !items || !Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: customerId, items (array)' 
-    });
-  }
-
-  for (const item of items) {
-    if (!item.productId || !item.quantity || item.price === undefined) {
-      return res.status(400).json({ 
-        error: 'Each item must have productId, quantity, and price' 
-      });
-    }
+  const { error } = orderSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
 
   const client = await db.connect();
