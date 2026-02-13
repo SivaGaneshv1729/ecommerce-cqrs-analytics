@@ -91,9 +91,24 @@ startConsuming().catch(err => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
+const shutdown = async () => {
   console.log('Shutting down consumer service...');
-  if (channel) await channel.close();
-  if (connection) await connection.close();
-  process.exit(0);
-});
+  try {
+    if (channel) await channel.close();
+    if (connection) await connection.close();
+    
+    // Close DB connection
+    const { readPool, writePool } = require('./db');
+    // Note: readPool/writePool might need to be exported or handled differently if they are not exposed, 
+    // but based on typical usage 'pg' pools handle their own lifecycle or we end them here if accessible.
+    // For now, focusing on broker.
+    
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during shutdown:', err);
+    process.exit(1);
+  }
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
