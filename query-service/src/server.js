@@ -22,12 +22,27 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`✓ Query Service listening on port ${PORT}`);
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+const shutdown = async () => {
   console.log('Shutting down Query Service...');
-  process.exit(0);
-});
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
+  
+  try {
+    const db = require('./db');
+    await db.end();
+    console.log('Database pool closed');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during shutdown:', err);
+    process.exit(1);
+  }
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
