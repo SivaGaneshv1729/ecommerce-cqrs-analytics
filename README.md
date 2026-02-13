@@ -125,6 +125,11 @@ Environment variables are documented in `.env.example`.
 - **Database**: `postgres://user:password@db:5432/write_db`
 - **Broker**: `amqp://guest:guest@broker:5672/`
 
+## 📚 Detailed Documentation
+
+- [Database Schema](./docs/schema.md) - Detailed breakdown of Write & Read models.
+- [API Specification](./docs/api.md) - Full endpoint reference.
+
 ---
 
 ## 🛠️ Design Decisions & Patterns

@@ -32,6 +32,10 @@ async function connectToBroker() {
   process.exit(1);
 }
 
+/**
+ * Polls the outbox table for unpublished events and publishes them to RabbitMQ.
+ * Uses a transactional approach where possible to ensure data consistency.
+ */
 async function publishEvents() {
   if (!channel) {
     console.log('Broker not connected, skipping event publishing');

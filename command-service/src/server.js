@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(express.json());
+app.use(require('helmet')()); // Security headers
 
 // Health check endpoint
 app.get('/health', (req, res) => {
